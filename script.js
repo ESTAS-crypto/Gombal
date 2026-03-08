@@ -658,7 +658,11 @@ function createEmojiMatch(area, g) {
 // NEXT
 // ==========================================
 function goNext() {
-    if (currentIndex >= gombalanList.length - 1) currentIndex = -1;
+    // If on last gombalan, show ending screen
+    if (currentIndex >= gombalanList.length - 1) {
+        showEnding();
+        return;
+    }
     const card = document.getElementById('gombalan-card');
     card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
     card.style.transform = 'translateX(-100px) rotate(-5deg)'; card.style.opacity = '0';
@@ -670,6 +674,54 @@ function goNext() {
             card.style.transform = ''; card.style.opacity = '';
         });
     }, 400);
+}
+
+// ==========================================
+// ENDING SCREEN
+// ==========================================
+function showEnding() {
+    // Fade out main content
+    const main = document.getElementById('main-content');
+    main.style.transition = 'opacity 1s ease';
+    main.style.opacity = '0';
+
+    setTimeout(() => {
+        main.classList.add('hidden');
+        const ending = document.getElementById('ending-screen');
+        ending.classList.remove('hidden');
+        initStars('ending-stars-canvas');
+
+        // Start floating hearts
+        startFloatingHearts();
+
+        // Trigger text animations
+        requestAnimationFrame(() => ending.classList.add('show'));
+
+        // Confetti burst
+        setTimeout(() => spawnConfetti(60), 500);
+    }, 1000);
+}
+
+function startFloatingHearts() {
+    const container = document.getElementById('ending-hearts-container');
+    const hearts = ['💕', '💖', '💗', '❤️', '💘', '💝', '✨', '🌸', '💞', '🌹'];
+
+    function spawnHeart() {
+        const h = document.createElement('div');
+        h.className = 'floating-heart';
+        h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        h.style.left = (5 + Math.random() * 90) + '%';
+        h.style.bottom = '-30px';
+        h.style.fontSize = (12 + Math.random() * 18) + 'px';
+        h.style.animationDuration = (6 + Math.random() * 6) + 's';
+        container.appendChild(h);
+        setTimeout(() => h.remove(), 12000);
+    }
+
+    // Spawn initial batch
+    for (let i = 0; i < 10; i++) setTimeout(() => spawnHeart(), i * 300);
+    // Keep spawning
+    setInterval(spawnHeart, 800);
 }
 
 // ==========================================
@@ -690,4 +742,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     }, 4500);
     document.getElementById('next-btn').addEventListener('click', goNext);
+    document.getElementById('replay-btn').addEventListener('click', () => location.reload());
 });

@@ -283,6 +283,54 @@
             color: #a89bb5;
             margin-bottom: 8px;
         }
+
+        /* Responsive Styles for QR Generator */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+
+            .card {
+                padding: 20px;
+                border-radius: 16px;
+                border-width: 0;
+            }
+
+            .style-selector {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .style-option {
+                width: 100%;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin: 4px 0;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            #qr-container {
+                padding: 10px;
+            }
+
+            #qr-container canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
+        }
     </style>
 </head>
 
