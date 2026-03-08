@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 Generate Heart QR Code</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- QR Code Styling - supports custom shapes while keeping QR scannable -->
+    <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+    <style>
+        :root {
+            --rose: #FF1744;
+            --pink-soft: #FF6B9A;
+            --bg-dark: #0a0a0f;
+            --text-white: #f0e6f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 50% 30%, #1a0a1e 0%, var(--bg-dark) 70%);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--pink-soft), #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #a89bb5;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 154, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #a89bb5;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 107, 154, 0.2);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--pink-soft);
+            box-shadow: 0 0 15px rgba(255, 107, 154, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--rose), var(--pink-soft));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 6px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 23, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 107, 154, 0.4);
+            color: var(--pink-soft);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 107, 154, 0.1);
+        }
+
+        #qr-output {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .qr-display {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto 20px;
+        }
+
+        /* Heart frame around QR */
+        .heart-frame {
+            position: relative;
+            display: inline-block;
+            padding: 20px;
+        }
+
+        .heart-frame::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+        }
+
+        #qr-container {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            display: inline-block;
+            position: relative;
+            box-shadow:
+                0 0 30px rgba(255, 23, 68, 0.2),
+                0 0 60px rgba(255, 107, 154, 0.1);
+        }
+
+        #qr-container canvas {
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* Heart border decoration */
+        .heart-border-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .heart-border-wrapper::before,
+        .heart-border-wrapper::after {
+            content: '💕';
+            position: absolute;
+            font-size: 1.2rem;
+        }
+
+        .heart-border-wrapper::before {
+            top: -10px;
+            left: -10px;
+        }
+
+        .heart-border-wrapper::after {
+            bottom: -10px;
+            right: -10px;
+        }
+
+        .corner-heart {
+            position: absolute;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .corner-heart.tl {
+            top: -12px;
+            left: -12px;
+        }
+
+        .corner-heart.tr {
+            top: -12px;
+            right: -12px;
+        }
+
+        .corner-heart.bl {
+            bottom: -12px;
+            left: -12px;
+        }
+
+        .corner-heart.br {
+            bottom: -12px;
+            right: -12px;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #a89bb5;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .style-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .style-option {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 154, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-white);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .style-option:hover,
+        .style-option.active {
+            background: rgba(255, 107, 154, 0.2);
+            border-color: var(--pink-soft);
+            box-shadow: 0 0 10px rgba(255, 107, 154, 0.2);
+        }
+
+        .scan-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 12px;
+            background: rgba(0, 200, 83, 0.15);
+            border: 1px solid rgba(0, 200, 83, 0.3);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #69F0AE;
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            color: #a89bb5;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>💕 Heart QR Code Generator</h1>
+    <p class="subtitle">Buat QR code cantik yang PASTI bisa di-scan untuk orang tersayang</p>
+
+    <div class="card">
+        <div class="input-group">
+            <label for="url-input">URL Website Gombalan:</label>
+            <input type="text" id="url-input" placeholder="https://your-site.vercel.app" value="">
+        </div>
+
+        <label style="text-align:center; margin-bottom: 10px;">Pilih Style:</label>
+        <div class="style-selector">
+            <button class="style-option active" data-style="heart-dots" onclick="selectStyle(this)">💕 Heart
+                Dots</button>
+            <button class="style-option" data-style="rounded" onclick="selectStyle(this)">🔴 Rounded</button>
+            <button class="style-option" data-style="classy" onclick="selectStyle(this)">✨ Classy</button>
+        </div>
+
+        <button class="btn" id="generate-btn" onclick="generateQR()">
+            💖 Generate QR Code
+        </button>
+
+        <div id="qr-output">
+            <p class="preview-label">Preview QR Code:</p>
+            <div class="qr-display">
+                <div id="qr-container">
+                    <span class="corner-heart tl">💕</span>
+                    <span class="corner-heart tr">💖</span>
+                    <span class="corner-heart bl">💗</span>
+                    <span class="corner-heart br">💕</span>
+                </div>
+            </div>
+            <div>
+                <span class="scan-badge">✅ 100% Scannable</span>
+            </div>
+            <div class="actions">
+                <button class="btn" onclick="downloadQR('png')">📥 Download PNG</button>
+                <button class="btn btn-outline" onclick="downloadQR('svg')">📐 Download SVG</button>
+                <button class="btn btn-outline" onclick="downloadWithFrame()">🎀 With Frame</button>
+            </div>
+            <p class="info-text">
+                QR code ini 100% bisa di-scan! ✅<br>
+                Kirim ke orang tersayang sebagai kejutan manis 💕
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let qrCode = null;
+        let currentStyle = 'heart-dots';
+
+        function selectStyle(el) {
+            document.querySelectorAll('.style-option').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            currentStyle = el.dataset.style;
+            // Regenerate if already has QR
+            if (qrCode) {
+                generateQR();
+            }
+        }
+
+        function getStyleConfig(style) {
+            const configs = {
+                'heart-dots': {
+                    dotsOptions: {
+                        color: "#C51162",
+                        type: "dots"
+                    },
+                    cornersSquareOptions: {
+                        color: "#FF1744",
+                        type: "extra-rounded"
+                    },
+                    cornersDotOptions: {
+                        color: "#FF1744",
+                        type: "dot"
+                    },
+                    backgroundOptions: {
+                        color: "#FFFFFF"
+                    }
+                },
+                'rounded': {
+                    dotsOptions: {
+                        color: "#E91E63",
+                        type: "rounded"
+                    },
+                    cornersSquareOptions: {
+                        color: "#C2185B",
+                        type: "extra-rounded"
+                    },
+                    cornersDotOptions: {
+                        color: "#C2185B",
+                        type: "dot"
+                    },
+                    backgroundOptions: {
+                        color: "#FFFFFF"
+                    }
+                },
+                'classy': {
+                    dotsOptions: {
+                        color: "#880E4F",
+                        type: "classy-rounded"
+                    },
+                    cornersSquareOptions: {
+                        color: "#AD1457",
+                        type: "dot"
+                    },
+                    cornersDotOptions: {
+                        color: "#AD1457",
+                        type: "dot"
+                    },
+                    backgroundOptions: {
+                        color: "#FFFFFF"
+                    }
+                }
+            };
+            return configs[style] || configs['heart-dots'];
+        }
+
+        function generateQR() {
+            const url = document.getElementById('url-input').value.trim();
+            if (!url) {
+                alert('Masukkan URL website terlebih dahulu!');
+                return;
+            }
+
+            // Clear previous
+            const container = document.getElementById('qr-container');
+            const existingCanvas = container.querySelector('canvas');
+            if (existingCanvas) existingCanvas.remove();
+            const existingSvg = container.querySelector('svg');
+            if (existingSvg) existingSvg.remove();
+
+            const styleConfig = getStyleConfig(currentStyle);
+
+            qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: "canvas",
+                data: url,
+                image: "",
+                dotsOptions: styleConfig.dotsOptions,
+                cornersSquareOptions: styleConfig.cornersSquareOptions,
+                cornersDotOptions: styleConfig.cornersDotOptions,
+                backgroundOptions: styleConfig.backgroundOptions,
+                qrOptions: {
+                    errorCorrectionLevel: "H"  // Highest error correction
+                }
+            });
+
+            qrCode.append(container);
+
+            // Show output section
+            document.getElementById('qr-output').style.display = 'block';
+        }
+
+        function downloadQR(format) {
+            if (!qrCode) return;
+            qrCode.download({
+                name: "romantic-qr-code",
+                extension: format
+            });
+        }
+
+        function downloadWithFrame() {
+            if (!qrCode) return;
+
+            const qrCanvas = document.querySelector('#qr-container canvas');
+            if (!qrCanvas) return;
+
+            const frameSize = 500;
+            const canvas = document.createElement('canvas');
+            canvas.width = frameSize;
+            canvas.height = frameSize;
+            const ctx = canvas.getContext('2d');
+
+            // Background - soft pink
+            ctx.fillStyle = '#FFF0F5';
+            ctx.fillRect(0, 0, frameSize, frameSize);
+
+            // Subtle heart pattern in background
+            ctx.globalAlpha = 0.06;
+            ctx.font = '14px serif';
+            ctx.fillStyle = '#FF1744';
+            for (let i = 0; i < frameSize; i += 25) {
+                for (let j = 0; j < frameSize; j += 25) {
+                    ctx.fillText('♥', i + (j % 50 === 0 ? 5 : 0), j);
+                }
+            }
+            ctx.globalAlpha = 1;
+
+            // Draw decorative heart border
+            drawDecorativeHeartBorder(ctx, frameSize);
+
+            // Draw QR in center with white padding
+            const qrSize = 300;
+            const padding = 20;
+            const totalQrSize = qrSize + padding * 2;
+            const qrX = (frameSize - totalQrSize) / 2;
+            const qrY = (frameSize - totalQrSize) / 2 + 10;
+
+            // White background for QR
+            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = 'rgba(255, 23, 68, 0.2)';
+            ctx.shadowBlur = 20;
+            roundRect(ctx, qrX, qrY, totalQrSize, totalQrSize, 16);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Draw QR code
+            ctx.drawImage(qrCanvas, qrX + padding, qrY + padding, qrSize, qrSize);
+
+            // Draw ribbon/bow at top center
+            drawRibbon(ctx, frameSize / 2, 35);
+
+            // Hearts at corners
+            ctx.font = '24px serif';
+            ctx.fillStyle = '#FF1744';
+            ctx.fillText('💕', 15, 35);
+            ctx.fillText('💖', frameSize - 45, 35);
+            ctx.fillText('💗', 15, frameSize - 15);
+            ctx.fillText('💕', frameSize - 45, frameSize - 15);
+
+            // Title text at bottom
+            ctx.font = "bold 18px 'Dancing Script', cursive, Georgia, serif";
+            ctx.fillStyle = '#C51162';
+            ctx.textAlign = 'center';
+            ctx.fillText('💕 Scan Me, Sayang! 💕', frameSize / 2, frameSize - 40);
+
+            // Small URL text
+            const url = document.getElementById('url-input').value.trim();
+            ctx.font = "11px 'Poppins', sans-serif, Arial";
+            ctx.fillStyle = '#999';
+            ctx.fillText(url, frameSize / 2, frameSize - 20);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = 'romantic-qr-with-frame.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function drawDecorativeHeartBorder(ctx, size) {
+            const borderWidth = 8;
+            const margin = 5;
+
+            // Outer border with gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#FF1744');
+            gradient.addColorStop(0.25, '#FF6B9A');
+            gradient.addColorStop(0.5, '#E040FB');
+            gradient.addColorStop(0.75, '#FF6B9A');
+            gradient.addColorStop(1, '#FF1744');
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = borderWidth;
+            roundRect(ctx, margin + borderWidth / 2, margin + borderWidth / 2,
+                size - margin * 2 - borderWidth, size - margin * 2 - borderWidth, 20);
+            ctx.stroke();
+
+            // Inner subtle border
+            ctx.strokeStyle = 'rgba(255, 107, 154, 0.3)';
+            ctx.lineWidth = 1;
+            roundRect(ctx, margin + borderWidth + 4, margin + borderWidth + 4,
+                size - margin * 2 - borderWidth * 2 - 8, size - margin * 2 - borderWidth * 2 - 8, 14);
+            ctx.stroke();
+        }
+
+        function drawRibbon(ctx, cx, cy) {
+            ctx.save();
+
+            // Left bow loop
+            ctx.beginPath();
+            ctx.ellipse(cx - 25, cy, 22, 12, -0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF4081';
+            ctx.fill();
+
+            // Right bow loop
+            ctx.beginPath();
+            ctx.ellipse(cx + 25, cy, 22, 12, 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF4081';
+            ctx.fill();
+
+            // Center knot
+            ctx.beginPath();
+            ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#C51162';
+            ctx.fill();
+
+            // Ribbon tails
+            ctx.beginPath();
+            ctx.moveTo(cx - 6, cy + 5);
+            ctx.lineTo(cx - 18, cy + 25);
+            ctx.lineTo(cx - 8, cy + 18);
+            ctx.fillStyle = '#FF1744';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(cx + 6, cy + 5);
+            ctx.lineTo(cx + 18, cy + 25);
+            ctx.lineTo(cx + 8, cy + 18);
+            ctx.fillStyle = '#FF1744';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+    </script>
+</body>
+
+</html>

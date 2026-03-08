@@ -1,0 +1,1425 @@
+/* ============================================
+   ROMANTIC GOMBALAN - v3 WITH CHALLENGES
+   Opaque cards, readable font, mini-games
+   ============================================ */
+
+:root {
+    --rose: #FF1744;
+    --rose-deep: #C51162;
+    --pink-soft: #FF6B9A;
+    --pink-light: #FFB6C1;
+    --gold: #FFD700;
+    --cyan: #00E5FF;
+    --purple: #E040FB;
+    --bg-dark: #0a0a0f;
+    --text-white: #f5f0fa;
+    --text-muted: #a89bb5;
+    --font-cursive: 'Great Vibes', cursive;
+    --font-dancing: 'Dancing Script', cursive;
+    --font-body: 'Poppins', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-dark);
+    font-family: var(--font-body);
+    color: var(--text-white);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ============================================
+   PHASE 1: LOADING / MATRIX RAIN
+   ============================================ */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
+}
+
+#loading-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#matrix-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#intro-text {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.intro-line {
+    display: block;
+    font-family: var(--font-dancing);
+    font-size: 2.8rem;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(30px);
+    background: linear-gradient(135deg, var(--pink-soft), var(--rose), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(255, 23, 68, 0.5));
+}
+
+.intro-line.show {
+    animation: fadeInUp 1.2s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   PHASE 2: GIFT BOX
+   ============================================ */
+#gift-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: radial-gradient(ellipse at 50% 60%, #1a0a1e, var(--bg-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1s ease;
+}
+
+#gift-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#gift-stars-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#gift-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tap-hint {
+    font-family: var(--font-dancing);
+    font-size: 1.5rem;
+    color: var(--pink-soft);
+    margin-bottom: 20px;
+    animation: pulse 2s ease-in-out infinite;
+    text-shadow: 0 0 15px rgba(255, 107, 154, 0.5);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+#gift-box {
+    position: relative;
+    cursor: pointer;
+    animation: floatGift 3s ease-in-out infinite;
+    transition: transform 0.3s;
+}
+
+#gift-box:hover {
+    transform: scale(1.05);
+}
+
+@keyframes floatGift {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+.gift-bottom {
+    width: 150px;
+    height: 110px;
+    background: linear-gradient(135deg, #FF1744, #E91E63);
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(255, 23, 68, 0.4);
+    overflow: hidden;
+}
+
+.gift-lid {
+    position: relative;
+    width: 170px;
+    height: 35px;
+    margin-left: -10px;
+    margin-bottom: -2px;
+    z-index: 2;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.lid-top {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #FF4081, #F50057);
+    border-radius: 8px 8px 0 0;
+}
+
+.lid-ribbon-v,
+.ribbon-v {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 100%;
+    background: linear-gradient(180deg, #FFD700, #FFC107);
+}
+
+.ribbon-h {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 24px;
+    background: linear-gradient(90deg, #FFD700, #FFC107);
+}
+
+.bow {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+
+.bow-left,
+.bow-right {
+    position: absolute;
+    width: 35px;
+    height: 22px;
+    background: #FFD700;
+    border-radius: 50%;
+    top: 5px;
+}
+
+.bow-left {
+    left: -30px;
+    transform: rotate(-20deg);
+}
+
+.bow-right {
+    right: -30px;
+    transform: rotate(20deg);
+}
+
+.bow-knot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #FFC107;
+    border-radius: 50%;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+}
+
+.gift-glow {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.gift-shadow {
+    width: 120px;
+    height: 15px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4), transparent);
+    margin-top: 15px;
+    border-radius: 50%;
+}
+
+#gift-box.opening .gift-lid {
+    transform: translateY(-80px) rotate(-45deg);
+    opacity: 0;
+}
+
+#gift-box.opening .gift-bottom {
+    animation: giftExplode 0.8s ease forwards;
+}
+
+@keyframes giftExplode {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.15);
+    }
+
+    60% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   PHASE 3: MAIN CONTENT
+   ============================================ */
+#main-content {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at 50% 50%, #1a0a1e 0%, var(--bg-dark) 70%);
+    padding: 15px 20px 30px;
+}
+
+#stars-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
+}
+
+/* ============================================
+   CHARACTER (compact)
+   ============================================ */
+#character-section {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 0;
+}
+
+.cute-character {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    animation: gentleBounce 3s ease-in-out infinite;
+    transform: scale(0.65);
+}
+
+@keyframes gentleBounce {
+
+    0%,
+    100% {
+        transform: scale(0.65) translateY(0);
+    }
+
+    50% {
+        transform: scale(0.65) translateY(-5px);
+    }
+}
+
+.character-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cat-head {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 70px;
+    background: #fff;
+    border-radius: 50% 50% 45% 45%;
+    z-index: 3;
+}
+
+.cat-ear {
+    position: absolute;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-bottom: 28px solid #fff;
+    z-index: 4;
+}
+
+.cat-ear::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: -9px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 18px solid var(--pink-soft);
+}
+
+.left-ear {
+    left: 28px;
+    transform: rotate(-15deg);
+}
+
+.right-ear {
+    right: 28px;
+    transform: rotate(15deg);
+}
+
+.cat-eye {
+    position: absolute;
+    top: 28px;
+    width: 16px;
+    height: 18px;
+    background: #2d2d2d;
+    border-radius: 50%;
+    animation: blink 4s ease-in-out infinite;
+}
+
+.left-eye {
+    left: 18px;
+}
+
+.right-eye {
+    right: 18px;
+}
+
+.eye-shine {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+@keyframes blink {
+
+    0%,
+    95%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    97% {
+        transform: scaleY(0.1);
+    }
+}
+
+.cat-nose {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 6px;
+    background: var(--pink-soft);
+    border-radius: 50%;
+}
+
+.cat-mouth {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 8px;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0 0 50% 50%;
+}
+
+.cat-blush {
+    position: absolute;
+    bottom: 18px;
+    width: 14px;
+    height: 8px;
+    background: rgba(255, 107, 154, 0.5);
+    border-radius: 50%;
+}
+
+.left-blush {
+    left: 8px;
+}
+
+.right-blush {
+    right: 8px;
+}
+
+.cat-body-main {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 60px;
+    background: #fff;
+    border-radius: 35px 35px 25px 25px;
+    z-index: 2;
+}
+
+.cat-arm {
+    position: absolute;
+    top: 10px;
+    width: 18px;
+    height: 35px;
+    background: #fff;
+    border-radius: 10px;
+    z-index: 5;
+}
+
+.left-arm {
+    left: -8px;
+    transform: rotate(20deg);
+    animation: strumGuitar 1s ease-in-out infinite;
+}
+
+.right-arm {
+    right: -8px;
+    transform: rotate(-15deg);
+}
+
+@keyframes strumGuitar {
+
+    0%,
+    100% {
+        transform: rotate(20deg);
+    }
+
+    50% {
+        transform: rotate(30deg);
+    }
+}
+
+.guitar {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-10deg);
+    z-index: 4;
+}
+
+.guitar-neck {
+    position: absolute;
+    top: -15px;
+    left: 15px;
+    width: 6px;
+    height: 30px;
+    background: #8B4513;
+    border-radius: 2px;
+}
+
+.guitar-body-shape {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    width: 35px;
+    height: 28px;
+    background: #D2691E;
+    border-radius: 50%;
+}
+
+.guitar-hole {
+    position: absolute;
+    top: 19px;
+    left: 10px;
+    width: 14px;
+    height: 14px;
+    background: #5D3A1A;
+    border-radius: 50%;
+}
+
+.cat-tail {
+    position: absolute;
+    bottom: 20px;
+    right: 15px;
+    width: 40px;
+    height: 20px;
+    border: 4px solid #fff;
+    border-color: #fff transparent transparent transparent;
+    border-radius: 50% 50% 0 0;
+    animation: wagTail 2s ease-in-out infinite;
+}
+
+@keyframes wagTail {
+
+    0%,
+    100% {
+        transform: rotate(-10deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+}
+
+.music-notes {
+    position: absolute;
+    top: -10px;
+    right: -20px;
+    z-index: 10;
+}
+
+.note {
+    position: absolute;
+    font-size: 14px;
+    opacity: 0;
+    animation: floatNote 3s ease-in-out infinite;
+}
+
+.note-1 {
+    top: 0;
+    left: 0;
+    animation-delay: 0s;
+    color: var(--pink-soft);
+}
+
+.note-2 {
+    top: -10px;
+    left: 10px;
+    animation-delay: 0.7s;
+    color: var(--gold);
+}
+
+.note-3 {
+    top: -3px;
+    left: 22px;
+    animation-delay: 1.4s;
+    color: var(--cyan);
+}
+
+@keyframes floatNote {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-30px) translateX(10px);
+    }
+}
+
+/* ============================================
+   TITLE
+   ============================================ */
+#main-title {
+    position: relative;
+    z-index: 5;
+    font-family: var(--font-cursive);
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--pink-soft), var(--gold), var(--pink-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* ============================================
+   GOMBALAN CARD - SOLID & READABLE
+   ============================================ */
+.gombalan-card {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gombalan-card .card-content-inner {
+    /* SOLID background - NOT transparent */
+    background: linear-gradient(145deg, #1e1028, #1a0f24, #201030);
+    border: 1.5px solid rgba(255, 107, 154, 0.3);
+    border-radius: 20px;
+    padding: 24px 22px;
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 107, 154, 0.1);
+    transition: transform 0.3s, opacity 0.5s;
+}
+
+.gombalan-card.locked .card-content-inner {
+    filter: blur(8px);
+    transform: scale(0.97);
+}
+
+.gombalan-card.unlocked .card-content-inner {
+    filter: none;
+    transform: scale(1);
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 107, 154, 0.15);
+}
+
+.gombalan-card.unlocked {
+    animation: cardReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardReveal {
+    0% {
+        transform: scale(0.95) rotateX(10deg);
+    }
+
+    50% {
+        transform: scale(1.03);
+    }
+
+    100% {
+        transform: scale(1) rotateX(0);
+    }
+}
+
+.card-emoji {
+    font-size: 2.2rem;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(255, 107, 154, 0.4));
+}
+
+.card-text {
+    /* READABLE FONT - Poppins, not cursive */
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #f0e6f6;
+    text-shadow: none;
+    letter-spacing: 0.2px;
+}
+
+.card-number {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+/* Lock overlay */
+.card-lock-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: rgba(10, 10, 15, 0.7);
+    transition: opacity 0.5s;
+}
+
+.gombalan-card.unlocked .card-lock-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.lock-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+    animation: lockBounce 2s ease-in-out infinite;
+}
+
+@keyframes lockBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.lock-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   CHALLENGE AREA
+   ============================================ */
+#challenge-area {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 440px;
+    min-height: 100px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.challenge-container {
+    background: linear-gradient(145deg, #1a0f24, #150c1e);
+    border: 1px solid rgba(255, 107, 154, 0.2);
+    border-radius: 16px;
+    padding: 18px;
+    animation: fadeInScale 0.5s ease both;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.challenge-title {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pink-soft);
+    margin-bottom: 12px;
+}
+
+.challenge-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+/* --- Challenge: Tap Hearts --- */
+.tap-hearts-area {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.tap-heart {
+    position: absolute;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+    animation: heartFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 23, 68, 0.4));
+}
+
+.tap-heart:hover {
+    transform: scale(1.2);
+}
+
+.tap-heart:active {
+    transform: scale(0.8);
+}
+
+.tap-heart.popped {
+    animation: heartPop 0.3s ease forwards !important;
+    pointer-events: none;
+}
+
+@keyframes heartFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+@keyframes heartPop {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.tap-counter {
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+/* --- Challenge: Hold Love Meter --- */
+.love-meter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.hold-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--pink-soft);
+    background: radial-gradient(circle, rgba(255, 23, 68, 0.2), transparent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.hold-btn:active {
+    transform: scale(0.95);
+    border-color: var(--gold);
+}
+
+.hold-btn .fill-ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: var(--gold);
+    transition: transform 0.1s linear;
+}
+
+.meter-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.meter-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--rose), var(--pink-soft), var(--gold));
+    border-radius: 6px;
+    transition: width 0.1s linear;
+}
+
+.meter-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* --- Challenge: Pop Bubbles --- */
+.bubble-area {
+    position: relative;
+    height: 130px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bubbleFloat 2.5s ease-in-out infinite;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bubble:hover {
+    transform: scale(1.1);
+}
+
+.bubble.popped {
+    animation: bubblePop 0.3s ease forwards !important;
+    pointer-events: none;
+}
+
+@keyframes bubbleFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes bubblePop {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* --- Challenge: Scratch Card (FIXED) --- */
+.scratch-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.scratch-reveal {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #1e1028, #2a1538);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: center;
+    white-space: pre-line;
+    line-height: 1.6;
+    padding: 15px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.scratch-canvas {
+    position: relative;
+    z-index: 2;
+    border-radius: 12px;
+    cursor: crosshair;
+    display: block;
+    margin: 0 auto;
+    touch-action: none;
+    transition: opacity 0.5s ease;
+}
+
+.scratch-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* --- Challenge: Riddle (Multiple Choice) --- */
+.riddle-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.riddle-btn {
+    padding: 12px 16px;
+    background: linear-gradient(145deg, #1e1028, #2a1538);
+    border: 1.5px solid rgba(255, 107, 154, 0.25);
+    border-radius: 12px;
+    color: var(--text-white);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.riddle-btn:hover {
+    border-color: var(--pink-soft);
+    background: linear-gradient(145deg, #2a1538, #351f45);
+    transform: translateY(-2px);
+}
+
+.riddle-btn:active {
+    transform: scale(0.96);
+}
+
+.riddle-btn.correct {
+    background: rgba(105, 240, 174, 0.2) !important;
+    border-color: #69F0AE !important;
+    color: #69F0AE;
+    animation: correctPulse 0.5s ease;
+}
+
+@keyframes correctPulse {
+
+    0%,
+    100% {
+        box-shadow: none;
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(105, 240, 174, 0.4);
+    }
+}
+
+.riddle-btn.wrong {
+    background: rgba(255, 23, 68, 0.2) !important;
+    border-color: var(--rose) !important;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-6px);
+    }
+
+    75% {
+        transform: translateX(6px);
+    }
+}
+
+.riddle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.riddle-feedback {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 1.2em;
+}
+
+/* --- Challenge: Rapid Tap --- */
+.rapid-tap-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.rapid-btn {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid var(--rose);
+    background: radial-gradient(circle, rgba(255, 23, 68, 0.3), rgba(255, 23, 68, 0.05));
+    cursor: pointer;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.08s;
+}
+
+.rapid-btn:active {
+    transform: scale(0.88);
+    background: rgba(255, 23, 68, 0.4);
+}
+
+.rapid-counter {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* --- Challenge: Emoji Match --- */
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.emoji-card-game {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #1e1028, #2a1538);
+    border: 1.5px solid rgba(255, 107, 154, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 0 auto;
+}
+
+.emoji-card-game.flipped {
+    background: linear-gradient(135deg, #2a1a3a, #351f45);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.emoji-card-game.matched {
+    background: rgba(0, 200, 83, 0.15);
+    border-color: rgba(0, 200, 83, 0.4);
+    animation: matchGlow 0.5s ease;
+}
+
+@keyframes matchGlow {
+
+    0%,
+    100% {
+        box-shadow: none;
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(0, 200, 83, 0.4);
+    }
+}
+
+/* ============================================
+   NEXT BUTTON
+   ============================================ */
+.next-btn {
+    position: relative;
+    z-index: 5;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--rose), var(--pink-soft));
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.3);
+    animation: fadeInScale 0.5s ease both;
+    margin-bottom: 8px;
+}
+
+.next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 23, 68, 0.4);
+}
+
+.next-btn:active {
+    transform: scale(0.96);
+}
+
+/* ============================================
+   COUNTER & FOOTER
+   ============================================ */
+#counter-section {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 8px;
+}
+
+#counter-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    letter-spacing: 1px;
+}
+
+#footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+#footer p {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+/* ============================================
+   CONFETTI
+   ============================================ */
+.confetti {
+    position: absolute;
+    pointer-events: none;
+}
+
+/* ============================================
+   ENTRANCE
+   ============================================ */
+#main-content.show #character-section {
+    animation: fadeInScale 0.8s ease 0.2s both;
+}
+
+#main-content.show #main-title {
+    animation: fadeInScale 0.8s ease 0.4s both;
+}
+
+#main-content.show .gombalan-card {
+    animation: fadeInScale 0.8s ease 0.6s both;
+}
+
+#main-content.show #challenge-area {
+    animation: fadeInScale 0.8s ease 0.8s both;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 480px) {
+    .intro-line {
+        font-size: 2rem;
+    }
+
+    #main-title {
+        font-size: 1.5rem;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+    }
+
+    .cute-character {
+        transform: scale(0.55);
+    }
+
+    @keyframes gentleBounce {
+
+        0%,
+        100% {
+            transform: scale(0.55) translateY(0);
+        }
+
+        50% {
+            transform: scale(0.55) translateY(-5px);
+        }
+    }
+
+    .emoji-card-game {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+
+    .gift-bottom {
+        width: 120px;
+        height: 90px;
+    }
+
+    .gift-lid {
+        width: 140px;
+        height: 30px;
+        margin-left: -10px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-text {
+        font-size: 1.15rem;
+    }
+
+    #main-title {
+        font-size: 2.4rem;
+    }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💕 Untukmu Sayang 💕</title>
+    <meta name="description" content="Sebuah pesan romantis yang spesial untukmu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- PHASE 1: MATRIX RAIN INTRO -->
+    <div id="loading-screen">
+        <canvas id="matrix-canvas"></canvas>
+        <div id="intro-text">
+            <span class="intro-line line-1">Hai Sayang...</span>
+            <span class="intro-line line-2">Ada sesuatu untukmu 💕</span>
+        </div>
+    </div>
+
+    <!-- PHASE 2: GIFT BOX -->
+    <div id="gift-screen" class="hidden">
+        <canvas id="gift-stars-canvas"></canvas>
+        <div id="gift-wrapper">
+            <p class="tap-hint">Ketuk untuk membuka 💝</p>
+            <div id="gift-box" role="button" tabindex="0">
+                <div class="gift-lid">
+                    <div class="lid-top"></div>
+                    <div class="lid-ribbon-v"></div>
+                    <div class="bow">
+                        <div class="bow-left"></div>
+                        <div class="bow-right"></div>
+                        <div class="bow-knot"></div>
+                    </div>
+                </div>
+                <div class="gift-bottom">
+                    <div class="ribbon-v"></div>
+                    <div class="ribbon-h"></div>
+                </div>
+                <div class="gift-glow"></div>
+            </div>
+            <div class="gift-shadow"></div>
+        </div>
+    </div>
+
+    <!-- PHASE 3: MAIN CONTENT -->
+    <div id="main-content" class="hidden">
+        <canvas id="stars-canvas"></canvas>
+        <div id="confetti-container"></div>
+
+        <!-- Cute Character -->
+        <div id="character-section">
+            <div class="cute-character">
+                <div class="character-body">
+                    <div class="cat-ear left-ear"></div>
+                    <div class="cat-ear right-ear"></div>
+                    <div class="cat-head">
+                        <div class="cat-eye left-eye">
+                            <div class="eye-shine"></div>
+                        </div>
+                        <div class="cat-eye right-eye">
+                            <div class="eye-shine"></div>
+                        </div>
+                        <div class="cat-nose"></div>
+                        <div class="cat-mouth"></div>
+                        <div class="cat-blush left-blush"></div>
+                        <div class="cat-blush right-blush"></div>
+                    </div>
+                    <div class="cat-body-main">
+                        <div class="cat-arm left-arm"></div>
+                        <div class="cat-arm right-arm"></div>
+                        <div class="guitar">
+                            <div class="guitar-neck"></div>
+                            <div class="guitar-body-shape"></div>
+                            <div class="guitar-hole"></div>
+                        </div>
+                    </div>
+                    <div class="cat-tail"></div>
+                </div>
+                <div class="music-notes">
+                    <span class="note note-1">♪</span>
+                    <span class="note note-2">♫</span>
+                    <span class="note note-3">♪</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Title -->
+        <h1 id="main-title">💕 Untukmu Sayang 💕</h1>
+
+        <!-- Gombalan Display Card -->
+        <div id="gombalan-card" class="gombalan-card locked">
+            <div class="card-lock-overlay" id="lock-overlay">
+                <span class="lock-icon">🔒</span>
+                <p class="lock-text">Selesaikan tantangan untuk buka!</p>
+            </div>
+            <div class="card-content-inner" id="card-content">
+                <span class="card-emoji" id="card-emoji">💕</span>
+                <p class="card-text" id="card-text">...</p>
+                <span class="card-number" id="card-number">#1 / 15</span>
+            </div>
+        </div>
+
+        <!-- Challenge Area -->
+        <div id="challenge-area">
+            <!-- Challenges are rendered here dynamically -->
+        </div>
+
+        <!-- Next Button (appears after completing challenge) -->
+        <button id="next-btn" class="next-btn hidden">
+            Gombalan Berikutnya 💌
+        </button>
+
+        <!-- Counter -->
+        <div id="counter-section">
+            <span id="counter-text">💕 1 / 15</span>
+        </div>
+
+        <div id="footer">
+            <p>Made with 💖 just for you</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
